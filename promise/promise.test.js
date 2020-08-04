@@ -45,4 +45,11 @@ describe('My Promise', () => {
     })
   })
 
+  test('should call finally method', async () => {
+    const finallySpy = jest.fn(() => {})
+    await promise.finally(finallySpy)
+
+    expect(finallySpy).toHaveBeenCalled()
+  })
+
 });
