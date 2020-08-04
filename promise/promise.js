@@ -1,7 +1,15 @@
+function noop() {}
+
 class MyPromise {
   constructor(executor) {
     this.queue = []
-    executor.call(null, this.onResolve.bind(this), this.onReject.bind(this))
+    this.errorHendler = noop
+
+    try {
+      executor.call(null, this.onResolve.bind(this), this.onReject.bind(this))
+    } catch (e) {
+      this.errorHendler(e)
+    }
   }
 
   onResolve(data) {
@@ -10,14 +18,19 @@ class MyPromise {
     })
   }
 
-  onReject() {}
+  onReject(error) {
+    this.errorHendler(error)
+  }
 
   then(fn) {
     this.queue.push(fn)
     return this
   }
 
-  catch(fn) {}
+  catch(fn) {
+    this.errorHendler = fn
+    return this
+  }
 
   finally(fn) {}
 }

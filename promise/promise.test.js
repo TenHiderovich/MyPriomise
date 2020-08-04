@@ -6,9 +6,10 @@ describe('My Promise', () => {
   let executorSpy
 
   const successResult = 42
+  const errorResult = 'I am error'
 
   beforeEach(() => {
-    executorSpy = jest.fn((r) => setTimeout(() => r(successResult), 150))
+    executorSpy = jest.fn((resolve) => setTimeout(() => resolve(successResult), 150))
     promise = new MyPromise(executorSpy)
   })
 
@@ -30,6 +31,18 @@ describe('My Promise', () => {
   test('should get data in then block and chain them', async () => {
     const result = await promise.then(num => num).then(num => num * 2)
     expect(result).toBe(successResult * 2)
+  })
+
+  test('should catch error', () => {
+    const errorExecutor = (_, reject) => setTimeout(() => reject(errorResult), 150)
+    const errorPromise = new MyPromise(errorExecutor)
+
+    return new Promise(resolve => {
+      errorPromise.catch(error => {
+        expect(error).toBe(errorResult)
+        resolve()
+      })
+    })
   })
 
 });
